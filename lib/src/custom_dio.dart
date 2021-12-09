@@ -71,7 +71,7 @@ class CustomDio {
           data: data, onSendProgress: sendProgress, cancelToken: cancelToken);
     }
 
-    throwIfNoSuccess(response);
+    _throwIfNoSuccess(response);
     return response;
   }
 
@@ -101,7 +101,7 @@ class CustomDio {
             data: data, onSendProgress: sendProgress, cancelToken: cancelToken);
       }
 
-      throwIfNoSuccess(response);
+      _throwIfNoSuccess(response);
       return response;
     } catch (err) {
       rethrow;
@@ -184,7 +184,7 @@ class CustomDio {
           throw ("reqMethod Not available ! ");
       }
 
-      throwIfNoSuccess(res);
+      _throwIfNoSuccess(res);
 
       return res;
     } on DioError catch (err) {
@@ -201,7 +201,7 @@ class CustomDio {
     }
   }
 
-  void throwIfNoSuccess(Response response) {
+  void _throwIfNoSuccess(Response response) {
     if (response.statusCode! > 300) {
       if(options!.errorPath == null){
 

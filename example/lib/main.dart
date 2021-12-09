@@ -1,9 +1,18 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:custom_dio/custom_dio.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  CustomDio.setInitData(CustomDioOptions(baseUrl: "http://www.google.com",));
+  CustomDio.setInitData(
+    CustomDioOptions(
+      baseUrl: "http://www.exmaple.com/api/v1/",
+      headers: {"authorization": "Bearer xxx"},
+    ),
+  );
+
   runApp(const MyApp());
 }
 
@@ -103,7 +112,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .headline4,
             ),
           ],
         ),
