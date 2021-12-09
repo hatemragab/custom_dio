@@ -37,10 +37,12 @@ class CustomDio {
     }
   }
 
+  /// init the package
   static void setInitData(CustomDioOptions dioOptions) {
     options = dioOptions;
   }
 
+  ///upload file
   Future<Response> uploadFile({
     required String path,
     required String filePath,
@@ -75,17 +77,21 @@ class CustomDio {
     return response;
   }
 
+  ///upload file bytes
   Future<Response> uploadBytes(
       {required String path,
       required Uint8List bytes,
       void Function(int received, int total)? sendProgress,
-        List<Map<String, String>>? body,
-        bool isPost = true,
+      List<Map<String, String>>? body,
+      bool isPost = true,
+      required String bytesExtension,
       bool loading = false,
       CancelToken? cancelToken}) async {
     try {
       final FormData data = FormData.fromMap({
-        "file": MultipartFile.fromBytes(bytes, filename: "xxx.png"),
+        "file": MultipartFile.fromBytes(bytes,
+            filename:
+                "${DateTime.now().microsecondsSinceEpoch}.$bytesExtension"),
       });
 
       if (body != null) {
@@ -108,6 +114,36 @@ class CustomDio {
     }
   }
 
+  Future<Response> uploadFiles(
+      {required String path,
+      required List<DioUploadFileModel> filesModel,
+      void Function(int received, int total)? sendProgress,
+      List<Map<String, String>>? body,
+      CancelToken? cancelToken}) async {
+    final mapOfData = <String, dynamic>{};
+    for (final file in filesModel) {
+      final _file = File(file.filePath);
+      final fileName = basename(_file.path);
+      mapOfData.addAll({
+        file.fileFiledName: await MultipartFile.fromFile(
+          _file.path,
+          filename: fileName,
+        ),
+      });
+    }
+    final formData = FormData.fromMap(mapOfData);
+
+    if (body != null) {
+      final x = body.map((e) => MapEntry(e.keys.first, e.values.first));
+      formData.fields.addAll(x);
+    }
+    final Response response = await _dio.post(path,
+        data: formData, onSendProgress: sendProgress, cancelToken: cancelToken);
+   _throwIfNoSuccess(response);
+    return response;
+  }
+
+  /// send any type of request GET POST PUT PATCH DELETE DOWNLOAD
   Future<Response> send(
       {required String reqMethod,
       required String path,
@@ -196,17 +232,15 @@ class CustomDio {
             "Bad Network Or Server Not available now", 500);
       }
       rethrow;
-    }  finally {
+    } finally {
       _dio.close();
     }
   }
 
   void _throwIfNoSuccess(Response response) {
     if (response.statusCode! > 300) {
-      if(options!.errorPath == null){
-
-      }
-      if(options!.errorPath!=null){
+      if (options!.errorPath == null) {}
+      if (options!.errorPath != null) {
         final errorMsg = response.data[options!.errorPath].toString();
         throw CustomDioException(errorMsg, response.statusCode ?? 500);
       }
@@ -214,4 +248,12 @@ class CustomDio {
       throw CustomDioException(errorMsg, response.statusCode ?? 500);
     }
   }
+}
+
+class DioUploadFileModel {
+  final String filePath;
+  final String fileFiledName;
+
+  const DioUploadFileModel(
+      {required this.filePath, required this.fileFiledName});
 }

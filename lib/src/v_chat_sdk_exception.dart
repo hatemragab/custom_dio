@@ -1,4 +1,3 @@
-
 class CustomDioException implements Exception {
   dynamic data;
   int code;

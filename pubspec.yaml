@@ -1,6 +1,6 @@
 name: custom_dio
 description: custom_dio is wrapper above dio package to make send request easy
-version: 0.0.1
+version: 1.0.0
 homepage: https://github.com/hatemragab/custom_dio
 
 environment:
@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   dio: ^4.0.4
+  path: ^1.8.0
   pretty_dio_logger: ^1.2.0-beta-1
 
 dev_dependencies:

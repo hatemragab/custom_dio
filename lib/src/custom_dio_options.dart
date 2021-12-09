@@ -23,7 +23,7 @@ class CustomDioOptions {
     this.headers,
     this.isProductionMode = true,
     this.followRedirects = true,
-    this.errorPath ,
+    this.errorPath,
     required this.baseUrl,
     this.adapter,
     this.interceptorsList = const [],

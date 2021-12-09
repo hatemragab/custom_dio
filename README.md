@@ -41,4 +41,63 @@ start  init before you send any request
   } catch (err) {
     print(err.toString());
   }
+  
+
+```
+## uploadBytes
+```
+    try {
+      final data = await CustomDio().uploadBytes(
+          path: "dio-test/file",
+          bytesExtension: "png",
+          bytes: bytes,
+          body: [
+            {"content": "sd"},
+            {"attachments": "attachments"},
+          ]);
+
+      return data.data.toString();
+    } catch (err) {
+    
+      rethrow;
+    }
+```
+## delete
+```
+  Future delete() async {
+    try {
+      final data =
+      await CustomDio().send(reqMethod: "delete", path: "dio-test/1");
+      dLog(data.data.toString());
+    } catch (err) {
+      
+    }
+  }
+```
+
+## getOne
+```  Future getOne() async {
+    try {
+      final data =
+      await CustomDio().send(reqMethod: "get", path: "dio-test/154");
+      dLog(data.data.toString());
+    } catch (err) {
+    
+    }
+  }
+```
+
+## patch
+```
+  Future update() async {
+    try {
+      final data = await CustomDio().send(
+          reqMethod: "patch",
+          path: "dio-test",
+          body: {"content": "update content"});
+      dLog(data.data.toString());
+    } catch (err) {
+    
+    }
+  }
 ```
