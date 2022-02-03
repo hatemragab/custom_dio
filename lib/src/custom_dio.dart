@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'custom_dio_options.dart';
-import 'v_chat_sdk_exception.dart';
+import 'custom_dio_exception.dart';
 import 'package:path/path.dart';
 
 CustomDioOptions? options;
@@ -139,7 +139,7 @@ class CustomDio {
     }
     final Response response = await _dio.post(path,
         data: formData, onSendProgress: sendProgress, cancelToken: cancelToken);
-   _throwIfNoSuccess(response);
+    _throwIfNoSuccess(response);
     return response;
   }
 
@@ -229,7 +229,7 @@ class CustomDio {
           err.type == DioErrorType.receiveTimeout ||
           err.type == DioErrorType.sendTimeout) {
         throw CustomDioException(
-            "Bad Network Or Server Not available now", 500);
+            "Bad Network Or Server Not available now", 5000);
       }
       rethrow;
     } finally {

@@ -6,6 +6,6 @@ class CustomDioException implements Exception {
 
   @override
   String toString() {
-    return data;
+    return data.toString();
   }
 }
