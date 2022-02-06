@@ -1,6 +1,6 @@
 name: custom_dio
 description: custom_dio is wrapper above dio package to make send request easy
-version: 1.0.0
+version: 1.0.2
 homepage: https://github.com/hatemragab/custom_dio
 
 environment:
