@@ -18,7 +18,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ^3.14.0
+  flutter: '>=3.50.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -27,6 +28,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  material_ui: ^1.11.0
+  cupertino_ui: ^1.1.6
   flutter:
     sdk: flutter
 
@@ -37,6 +40,7 @@ dependencies:
   custom_dio:
     path: ../
 
+  image_picker: ^1.2.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -47,7 +51,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
-  image_picker:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

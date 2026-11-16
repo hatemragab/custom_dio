@@ -1,8 +1,8 @@
-import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:custom_dio/custom_dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:image_picker/image_picker.dart';
 
 class TestPage extends StatefulWidget {
@@ -22,37 +22,27 @@ class _TestPageState extends State<TestPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(
-                height: 20,
+              const SizedBox(height: 20),
+              TextButton(onPressed: getAll, child: const Text("getAll")),
+              const SizedBox(height: 20),
+              TextButton(onPressed: post, child: const Text("post")),
+              const SizedBox(height: 20),
+              TextButton(onPressed: getOne, child: const Text("getOne")),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: getByFilter,
+                child: const Text("getByFilter"),
               ),
-              TextButton(onPressed: getAll, child: Text("getAll")),
-              const  SizedBox(
-                height: 20,
+              const SizedBox(height: 20),
+              TextButton(onPressed: delete, child: const Text("delete")),
+              const SizedBox(height: 20),
+              TextButton(onPressed: update, child: const Text("update")),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: uploadFile,
+                child: const Text("Upload File"),
               ),
-              TextButton(onPressed: post, child: Text("post")),
-              const   SizedBox(
-                height: 20,
-              ),
-              TextButton(onPressed: getOne, child: Text("getOne")),
-              const   SizedBox(
-                height: 20,
-              ),
-              TextButton(onPressed: getByFilter, child: Text("getByFilter")),
-              const  SizedBox(
-                height: 20,
-              ),
-              TextButton(onPressed: delete, child: Text("delete")),
-              const  SizedBox(
-                height: 20,
-              ),
-              TextButton(onPressed: update, child: Text("update")),
-              const  SizedBox(
-                height: 20,
-              ),
-              TextButton(onPressed: uploadFile, child: Text("Upload File")),
-              const  SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -72,9 +62,10 @@ class _TestPageState extends State<TestPage> {
   Future post() async {
     try {
       final data = await CustomDio().send(
-          reqMethod: "post",
-          path: "dio-test",
-          body: {"content": "post content"});
+        reqMethod: "post",
+        path: "dio-test",
+        body: {"content": "post content"},
+      );
       dLog(data.data.toString());
     } catch (err) {
       dErrorLog(err.toString());
@@ -83,8 +74,10 @@ class _TestPageState extends State<TestPage> {
 
   Future getOne() async {
     try {
-      final data =
-      await CustomDio().send(reqMethod: "get", path: "dio-test/154");
+      final data = await CustomDio().send(
+        reqMethod: "get",
+        path: "dio-test/154",
+      );
       dLog(data.data.toString());
     } catch (err) {
       dErrorLog(err.toString());
@@ -93,8 +86,10 @@ class _TestPageState extends State<TestPage> {
 
   Future delete() async {
     try {
-      final data =
-      await CustomDio().send(reqMethod: "delete", path: "dio-test/1");
+      final data = await CustomDio().send(
+        reqMethod: "delete",
+        path: "dio-test/1",
+      );
       dLog(data.data.toString());
     } catch (err) {
       dErrorLog(err.toString());
@@ -104,9 +99,10 @@ class _TestPageState extends State<TestPage> {
   Future getByFilter() async {
     try {
       final data = await CustomDio().send(
-          reqMethod: "get",
-          path: "dio-test/filter",
-          query: {"query": "query of get by filter"});
+        reqMethod: "get",
+        path: "dio-test/filter",
+        query: {"query": "query of get by filter"},
+      );
       dLog(data.data.toString());
     } catch (err) {
       dErrorLog(err.toString());
@@ -116,9 +112,10 @@ class _TestPageState extends State<TestPage> {
   Future update() async {
     try {
       final data = await CustomDio().send(
-          reqMethod: "patch",
-          path: "dio-test",
-          body: {"content": "update content"});
+        reqMethod: "patch",
+        path: "dio-test",
+        body: {"content": "update content"},
+      );
       dLog(data.data.toString());
     } catch (err) {
       dErrorLog(err.toString());
@@ -128,31 +125,21 @@ class _TestPageState extends State<TestPage> {
   Future uploadFile() async {
     try {
       final picker = ImagePicker();
-      final img = await picker.getImage(source: ImageSource.gallery);
-      if (img != null) {
-        final data = await CustomDio()
-            .uploadFiles(path: "dio-test/file", filesModel: [
-          DioUploadFileModel(filePath: img.path, fileFiledName: "file"),
-          DioUploadFileModel(filePath: img.path, fileFiledName: "file"),
-        ], body: [
-          {"content": "data"}
-        ]);
-        dLog(data.data.toString());
-
-        ///upload using file bytes
-        //final data = await uploadBytes(File(img.path).readAsBytesSync());
-        ///upload files using file path
-        // final data = await CustomDio()
-        //     .uploadFiles(apiEndPoint: "dio-test/file", filesModel: [
-        //   DioUploadFileModel(filePath: img.path, fileFiledName: "file"),
-        //   DioUploadFileModel(filePath: img.path, fileFiledName: "file"),
-        // ], body: [
-        //   {"content": "sd"},
-        //   {"attachments": "attachments"},
-        // ]);
-
-        // dLog(data.data.toString());
-      }
+      final img = await picker.pickImage(source: ImageSource.gallery);
+      if (img == null) return;
+      final extension = img.name.contains('.')
+          ? img.name.split('.').last
+          : 'bin';
+      final data = await CustomDio().uploadBytes(
+        path: 'dio-test/file',
+        bytes: await img.readAsBytes(),
+        bytesExtension: extension,
+        body: [
+          {'content': 'data'},
+        ],
+      );
+      if (!mounted) return;
+      dLog(data.data.toString());
     } catch (err) {
       dErrorLog(err.toString());
     }
@@ -161,13 +148,14 @@ class _TestPageState extends State<TestPage> {
   Future<String> uploadBytes(Uint8List bytes) async {
     try {
       final data = await CustomDio().uploadBytes(
-          path: "dio-test/file",
-          bytesExtension: "png",
-          bytes: bytes,
-          body: [
-            {"content": "sd"},
-            {"attachments": "attachments"},
-          ]);
+        path: "dio-test/file",
+        bytesExtension: "png",
+        bytes: bytes,
+        body: [
+          {"content": "sd"},
+          {"attachments": "attachments"},
+        ],
+      );
 
       return data.data.toString();
     } catch (err) {
@@ -177,21 +165,18 @@ class _TestPageState extends State<TestPage> {
   }
 
   void dLog(String data) {
+    if (!mounted) return;
     showCupertinoDialog(
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: Text(
-            "Info",
-            style: TextStyle(fontSize: 30),
-          ),
-          content: Text(
-            data,
-            style: TextStyle(fontSize: 25),
-          ),
+          title: const Text("Info", style: TextStyle(fontSize: 30)),
+          content: Text(data, style: const TextStyle(fontSize: 25)),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context), child: Text("OK"))
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
           ],
         );
       },
@@ -199,21 +184,18 @@ class _TestPageState extends State<TestPage> {
   }
 
   void dErrorLog(String data) {
+    if (!mounted) return;
     showCupertinoDialog(
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: Text(
-            "Error",
-            style: TextStyle(fontSize: 30),
-          ),
-          content: Text(
-            data,
-            style: TextStyle(fontSize: 25),
-          ),
+          title: const Text("Error", style: TextStyle(fontSize: 30)),
+          content: Text(data, style: const TextStyle(fontSize: 25)),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context), child: Text("OK"))
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
           ],
         );
       },

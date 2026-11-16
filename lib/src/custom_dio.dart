@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
 import 'custom_dio_options.dart';
 import 'custom_dio_exception.dart';
+
 import 'package:path/path.dart';
 
 CustomDioOptions? options;
@@ -26,13 +29,15 @@ class CustomDio {
     _dio.interceptors.addAll(options!.interceptorsList);
     if (!options!.isProductionMode) {
       if (options!.logAllData || enableLog) {
-        _dio.interceptors.add(PrettyDioLogger(
-          requestHeader: true,
-          requestBody: true,
-          responseBody: true,
-          error: true,
-          maxWidth: 100,
-        ));
+        _dio.interceptors.add(
+          PrettyDioLogger(
+            requestHeader: true,
+            requestBody: true,
+            responseBody: true,
+            error: true,
+            maxWidth: 100,
+          ),
+        );
       }
     }
   }
@@ -54,10 +59,7 @@ class CustomDio {
     final File file = File(filePath);
     final fileName = basename(file.path);
     final FormData data = FormData.fromMap({
-      "file": await MultipartFile.fromFile(
-        file.path,
-        filename: fileName,
-      ),
+      "file": await MultipartFile.fromFile(file.path, filename: fileName),
     });
 
     if (body != null) {
@@ -66,11 +68,19 @@ class CustomDio {
     }
     late Response response;
     if (isPost) {
-      response = await _dio.post(path,
-          data: data, onSendProgress: sendProgress, cancelToken: cancelToken);
+      response = await _dio.post(
+        path,
+        data: data,
+        onSendProgress: sendProgress,
+        cancelToken: cancelToken,
+      );
     } else {
-      response = await _dio.patch(path,
-          data: data, onSendProgress: sendProgress, cancelToken: cancelToken);
+      response = await _dio.patch(
+        path,
+        data: data,
+        onSendProgress: sendProgress,
+        cancelToken: cancelToken,
+      );
     }
 
     _throwIfNoSuccess(response);
@@ -78,20 +88,22 @@ class CustomDio {
   }
 
   ///upload file bytes
-  Future<Response> uploadBytes(
-      {required String path,
-      required Uint8List bytes,
-      void Function(int received, int total)? sendProgress,
-      List<Map<String, String>>? body,
-      bool isPost = true,
-      required String bytesExtension,
-      bool loading = false,
-      CancelToken? cancelToken}) async {
+  Future<Response> uploadBytes({
+    required String path,
+    required Uint8List bytes,
+    void Function(int received, int total)? sendProgress,
+    List<Map<String, String>>? body,
+    bool isPost = true,
+    required String bytesExtension,
+    bool loading = false,
+    CancelToken? cancelToken,
+  }) async {
     try {
       final FormData data = FormData.fromMap({
-        "file": MultipartFile.fromBytes(bytes,
-            filename:
-                "${DateTime.now().microsecondsSinceEpoch}.$bytesExtension"),
+        "file": MultipartFile.fromBytes(
+          bytes,
+          filename: "${DateTime.now().microsecondsSinceEpoch}.$bytesExtension",
+        ),
       });
 
       if (body != null) {
@@ -100,11 +112,19 @@ class CustomDio {
       }
       late Response response;
       if (isPost) {
-        response = await _dio.post(path,
-            data: data, onSendProgress: sendProgress, cancelToken: cancelToken);
+        response = await _dio.post(
+          path,
+          data: data,
+          onSendProgress: sendProgress,
+          cancelToken: cancelToken,
+        );
       } else {
-        response = await _dio.patch(path,
-            data: data, onSendProgress: sendProgress, cancelToken: cancelToken);
+        response = await _dio.patch(
+          path,
+          data: data,
+          onSendProgress: sendProgress,
+          cancelToken: cancelToken,
+        );
       }
 
       _throwIfNoSuccess(response);
@@ -114,12 +134,13 @@ class CustomDio {
     }
   }
 
-  Future<Response> uploadFiles(
-      {required String path,
-      required List<DioUploadFileModel> filesModel,
-      void Function(int received, int total)? sendProgress,
-      List<Map<String, String>>? body,
-      CancelToken? cancelToken}) async {
+  Future<Response> uploadFiles({
+    required String path,
+    required List<DioUploadFileModel> filesModel,
+    void Function(int received, int total)? sendProgress,
+    List<Map<String, String>>? body,
+    CancelToken? cancelToken,
+  }) async {
     final mapOfData = <String, dynamic>{};
     for (final file in filesModel) {
       final _file = File(file.filePath);
@@ -137,22 +158,27 @@ class CustomDio {
       final x = body.map((e) => MapEntry(e.keys.first, e.values.first));
       formData.fields.addAll(x);
     }
-    final Response response = await _dio.post(path,
-        data: formData, onSendProgress: sendProgress, cancelToken: cancelToken);
+    final Response response = await _dio.post(
+      path,
+      data: formData,
+      onSendProgress: sendProgress,
+      cancelToken: cancelToken,
+    );
     _throwIfNoSuccess(response);
     return response;
   }
 
   /// send any type of request GET POST PUT PATCH DELETE DOWNLOAD
-  Future<Response> send(
-      {required String reqMethod,
-      required String path,
-      Function(int count, int total)? onSendProgress,
-      Function(int count, int total)? onReceiveProgress,
-      CancelToken? cancelToken,
-      Map<String, dynamic> body = const <String, dynamic>{},
-      Map<String, dynamic> query = const <String, dynamic>{},
-      String? saveDirPath}) async {
+  Future<Response> send({
+    required String reqMethod,
+    required String path,
+    Function(int count, int total)? onSendProgress,
+    Function(int count, int total)? onReceiveProgress,
+    CancelToken? cancelToken,
+    Map<String, dynamic> body = const <String, dynamic>{},
+    Map<String, dynamic> query = const <String, dynamic>{},
+    String? saveDirPath,
+  }) async {
     late Response res;
 
     final _body = {}..addAll(body);
@@ -229,7 +255,9 @@ class CustomDio {
           err.type == DioErrorType.receiveTimeout ||
           err.type == DioErrorType.sendTimeout) {
         throw CustomDioException(
-            "Bad Network Or Server Not available now", 5000);
+          "Bad Network Or Server Not available now",
+          5000,
+        );
       }
       rethrow;
     } finally {
@@ -254,6 +282,8 @@ class DioUploadFileModel {
   final String filePath;
   final String fileFiledName;
 
-  const DioUploadFileModel(
-      {required this.filePath, required this.fileFiledName});
+  const DioUploadFileModel({
+    required this.filePath,
+    required this.fileFiledName,
+  });
 }

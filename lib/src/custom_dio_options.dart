@@ -19,8 +19,6 @@ class CustomDioOptions {
 
   late bool logAllData;
 
-
-
   CustomDioOptions({
     this.headers,
     this.isProductionMode = true,
